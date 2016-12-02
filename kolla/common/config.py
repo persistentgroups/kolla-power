@@ -71,6 +71,8 @@ _CLI_OPTS = [
                help='The base distro image tag'),
     cfg.StrOpt('base-image', default=None,
                help='The base image name. Default is the same with base'),
+    cfg.StrOpt('base-arch', default="x86_64",
+               help='The base architecture. Default is x86_64'),
     cfg.BoolOpt('debug', short='d', default=False,
                 help='Turn on debugging log level'),
     cfg.DictOpt('build-args',

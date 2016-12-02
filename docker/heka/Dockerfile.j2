@@ -5,6 +5,26 @@ MAINTAINER {{ maintainer }}
 
 {% import "macros.j2" as macros with context %}
 
+{% if base_arch in ['ppc64le'] and base_distro in ['ubuntu'] %}
+
+ENV GODEBUG=cgocheck=0
+RUN useradd --user-group heka \
+    && mkdir /etc/heka
+RUN apt-get  -y install  --no-install-recommends  git build-essential debhelper golang cmake fakeroot
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+RUN git clone https://github.com/mozilla-services/heka \
+    && cd /heka \
+    && source /heka/build.sh ; \
+    cd /heka/build ; \
+    make install ; \
+    cp -r /heka/build/heka/bin/*  /usr/bin/ ; \
+    cp -r /heka/build/heka/include/*  /usr/include/ ; \
+    cp -r /heka/build/heka/lib/*  /usr/lib/ ; \
+    cp -r /heka/build/heka/share/*  /usr/share/ ; \
+    cp -r /heka/build/heka/src/*  /usr/src/ ; \
+    cp -r /usr/local/share/heka/ /usr/share/
+{% else %}
+
 {% if base_distro in ['centos', 'fedora', 'oraclelinux', 'rhel'] %}
     {% set heka_packages = [
         'https://github.com/mozilla-services/heka/releases/download/v0.10.0/heka-0_10_0-linux-amd64.rpm'
@@ -19,6 +39,8 @@ RUN useradd --user-group heka \
 {% endif %}
 
 {{ macros.install_packages(heka_packages | customizable("packages")) }}
+
+{% endif %}
 
 COPY plugins/modules /usr/share/heka/lua_modules/
 COPY plugins/decoders /usr/share/heka/lua_decoders/

@@ -8,9 +8,9 @@
 if [[ $(stat -c %U:%G /var/log/kolla) != "heka:kolla" ]]; then
     sudo chown heka:kolla /var/log/kolla
 fi
-if [[ $(stat -c %a /var/log/kolla) != "2775" ]]; then
-    sudo chmod 2775 /var/log/kolla
-fi
+#f [[ $(stat -c %a /var/log/kolla) != "2775" ]]; then
+    sudo chmod 2777 /var/log/kolla
+#fi
 
 # Bootstrap and exit if KOLLA_BOOTSTRAP variable is set. This catches all cases
 # of the KOLLA_BOOTSTRAP variable being set, including empty.

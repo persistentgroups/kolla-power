@@ -37,6 +37,15 @@ RUN chmod 755 /usr/local/bin/kolla_extend_start \
 # https://discuss.elastic.co/t/running-as-non-root-user-service-wrapper-has-changed/7863
 RUN usermod -s /bin/bash elasticsearch -d /usr/share/elasticsearch
 
+{% if base_arch in ['ppc64le'] and base_distro in ['ubuntu'] %}
+RUN apt-get update ;  \
+    apt-get install wget ; \
+    wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.0/elasticsearch-2.4.0.deb ; \
+    dpkg -i /elasticsearch-2.4.0.deb
+
+{% endif %}
+
+
 {% block elasticsearch_footer %}{% endblock %}
 {% block footer %}{% endblock %}
 {{ include_footer }}

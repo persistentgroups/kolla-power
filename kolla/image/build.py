@@ -513,6 +513,7 @@ class KollaWorker(object):
         self.base_tag = conf.base_tag
         self.install_type = conf.install_type
         self.tag = conf.tag
+        self.base_arch = conf.base_arch
         self.images = list()
         if conf.rpm_setup_config:
             rpm_setup_config = filter(None, conf.rpm_setup_config)
@@ -675,6 +676,7 @@ class KollaWorker(object):
                       'maintainer': self.maintainer,
                       'kolla_version': kolla_version,
                       'image_name': image_name,
+                      'base_arch': self.base_arch,
                       'rpm_setup': self.rpm_setup}
             env = jinja2.Environment(  # nosec: not used to render HTML
                 loader=jinja2.FileSystemLoader(self.working_dir))

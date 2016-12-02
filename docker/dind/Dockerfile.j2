@@ -5,6 +5,12 @@ MAINTAINER {{ maintainer }}
 
 {% import "macros.j2" as macros with context %}
 
+{% if base_arch in ['ppc64le'] and base_distro in ['ubuntu'] %}
+COPY docker.list /etc/apt/sources.list.d/
+RUN apt-get update
+RUN apt-get -y --allow-unauthenticated install docker-engine
+{% endif %}
+
 {% if base_distro in ['centos', 'fedora', 'oraclelinux', 'rhel'] %}
 
 # Since the gate cannot do DinD on centos due to the age of the kernel, we don't

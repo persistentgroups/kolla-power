@@ -4,7 +4,7 @@
 # Fix permissions for libvirt
 # Do not remove unless CentOS has been validated
 if [[ -c /dev/kvm ]]; then
-    chmod 660 /dev/kvm
+    chmod 777 /dev/kvm
     chown root:kvm /dev/kvm
 fi
 

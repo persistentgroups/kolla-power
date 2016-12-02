@@ -1,4 +1,9 @@
+{% if base_arch in ['ppc64le'] %}
+FROM ppc64le/{{ base_image }}:{{ base_distro_tag }}
+{% else %}
 FROM {{ base_image }}:{{ base_distro_tag }}
+{% endif %}
+
 MAINTAINER {{ maintainer }}
 
 LABEL kolla_version="{{ kolla_version }}"
@@ -215,8 +220,16 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends apt-transport-https ca-certificates \
     && apt-get clean
 
+{% if base_arch in ['ppc64le'] %}
+
+COPY mariadb.list.ppc /etc/apt/sources.list.d/mariadb.list
+
+{% else %}
+
 COPY sources.list.{{ base_distro }} /etc/apt/sources.list
 COPY apt_preferences.{{ base_distro }} /etc/apt/preferences
+
+{% endif %}
 
 {% set base_apt_packages = [
    'apt-utils',
@@ -280,6 +293,24 @@ COPY set_configs.py /usr/local/bin/kolla_set_configs
 COPY start.sh /usr/local/bin/kolla_start
 COPY sudoers /etc/sudoers
 COPY curlrc /root/.curlrc
+
+{% if base_arch == 'ppc64le' and base_distro == 'ubuntu' %}
+RUN apt-get -y install  --no-install-recommends build-essential  gcc
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+    && python get-pip.py \
+    && rm get-pip.py \
+    && pip --no-cache-dir install  --prefix='/usr/local' dumb-init
+RUN touch /usr/local/bin/kolla_extend_start \
+    && chmod 755 /usr/local/bin/kolla_start /usr/local/bin/kolla_extend_start /usr/local/bin/kolla_set_configs \
+    && chmod 440 /etc/sudoers \
+    && groupadd kolla \
+    && mkdir -p /var/log/kolla \
+    && chown :kolla /var/log/kolla \
+    && chmod 2775 /var/log/kolla \
+    && rm -f /tmp/kolla_bashrc \
+    && chmod +x /usr/local/bin/dumb-init
+
+{% else %}
 RUN touch /usr/local/bin/kolla_extend_start \
     && chmod 755 /usr/local/bin/kolla_start /usr/local/bin/kolla_extend_start /usr/local/bin/kolla_set_configs \
     && chmod 440 /etc/sudoers \
@@ -290,6 +321,7 @@ RUN touch /usr/local/bin/kolla_extend_start \
     && rm -f /tmp/kolla_bashrc \
     && curl -sSL https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64 -o /usr/local/bin/dumb-init \
     && chmod +x /usr/local/bin/dumb-init
+{% endif %}
 
 {% block base_footer %}{% endblock %}
 CMD ["kolla_start"]

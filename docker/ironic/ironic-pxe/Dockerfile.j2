@@ -11,12 +11,20 @@ MAINTAINER {{ maintainer }}
         'syslinux-tftpboot'
     ] %}
 {% elif base_distro in ['ubuntu', 'debian'] %}
+{% if base_arch in ['ppc64le'] %}
+    {% set ironic_pxe_packages = [
+        'tftpd-hpa',
+        'syslinux-common',
+        'pxelinux'
+    ] %}
+{% else %}
     {% set ironic_pxe_packages = [
         'tftpd-hpa',
         'syslinux-common',
         'syslinux',
         'pxelinux'
     ] %}
+{% endif %}
 {% endif %}
 
 {{ macros.install_packages(ironic_pxe_packages | customizable("packages")) }}
