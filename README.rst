@@ -1,5 +1,4 @@
 
-
 Install pip
 easy_install pip
 
@@ -84,12 +83,6 @@ edit /et/kolla/passwords.yml and /et/kolla/globals.yml
 	enable_haproxy: "no"
 	enable_cinder_backend_lvm: "yes"
 	
-	kolla-ansible post deploy
-	
-	kolla-ansible post-deploy
-	
-	source /etc/kolla/admin-openrc.sh
-	
-	
-	
-	
+kolla-ansible post deploy
+kolla-ansible  deploy
+source /etc/kolla/admin-openrc.sh
